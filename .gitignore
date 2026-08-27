@@ -1,0 +1,122 @@
+# IDE stuff
+.vscode
+.idea
+Templates/
+.vs
+out/
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+*.so.*
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Build directories
+build/
+Build/
+build-*/
+cmake-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+
+# vcpkg
+vcpkg_installed/
+
+# debug information files
+*.dwo
+
+# test output & cache
+Testing/
+.cache/
+
+# =========================
+# Game Dev & Asset Files
+# =========================
+
+# Blender backup and auto-save files (CRITICAL)
+# Blender creates a .blend1 file every time you save. If you don't ignore these, 
+# you will be committing a duplicate of your entire 3D model history every single commit!
+*.blend1
+*.blend2
+*.blend@
+
+# LMMS / Audio backup files (Just in case)
+*.mmpz.bak
+*.bak
+
+# =========================
+# OS Generated Junk
+# =========================
+
+# Windows thumbnail caches and folder configs
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+
+# macOS folder attributes (Good practice if you ever share the code)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# Extra C++ Tooling
+# =========================
+
+# Visual Studio (Just in case you or someone else accidentally opens it in VS instead of Rider)
+.vs/
+*.user
+*.suo
+
+# Clangd language server cache (If you ever switch back to VS Code)
+.clangd/
+
+# Unwanted imgui config file 
+imgui.ini

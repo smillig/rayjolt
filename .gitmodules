@@ -1,0 +1,12 @@
+[submodule "raylib"]
+	path = raylib
+	url = https://github.com/raysan5/raylib.git
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "JoltPhysics"]
+	path = JoltPhysics
+	url = https://github.com/jrouwe/JoltPhysics.git
+[submodule "rlImGui"]
+	path = rlImGui
+	url = https://github.com/raylib-extras/rlImGui.git
