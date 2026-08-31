@@ -110,7 +110,7 @@ ProjectSettings::ProjectSettings()
     
     // Setup for shaders
     mainRenderCanvas = LoadRenderTextureDepthTex(screenWidth, screenHeight);
-    cavityShader = LoadShader(0, "Assets/Shaders/cavity.frag");
+    cavityShader = LoadShader(0, "Assets/Shaders/Sobel/sobel.frag");
     // TODO: Setup multi canvas rendering for fixing the debug draw issue of it not being culled
     //RenderTexture2D debugCanvas = LoadRenderTextureDepthTex(screenWidth, screenHeight);
     

@@ -70,7 +70,7 @@ int main() {
         BeginTextureMode(projectSettings->mainRenderCanvas);
         ClearBackground(DARKGRAY);
         BeginMode3D(projectSettings->camera);
-            DrawGrid(10, 1.0f);
+            // DrawGrid(10, 1.0f);
             pool->renderGroundPlane();
             pool->renderDynamics();
         EndTextureMode();
