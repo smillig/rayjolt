@@ -40,6 +40,18 @@ int main() {
     int depthLoc = GetShaderLocation(projectSettings->cavityShader, "texture1");
     // pass the int location of the float time
     int timeLoc = GetShaderLocation(projectSettings->cavityShader, "time");
+    int viewEyeLoc = GetShaderLocation(projectSettings->cavityShader, "viewEye");
+    int viewCenterLoc = GetShaderLocation(projectSettings->cavityShader, "viewCenter");
+    int ambientLoc = GetShaderLocation(projectSettings->cavityShader, "ambient");
+    float amb[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
+    SetShaderValue(projectSettings->cavityShader, ambientLoc, amb, SHADER_UNIFORM_VEC4);
+    
+    // raylib lighting
+    Light lights[1] = { 0 }; // Use MAX_LIGHTS = 4
+    lights[0] = projectSettings->CreateLight(LIGHT_POINT, Vector3{ 0.0f, 15.0f, 0.0f }, projectSettings->camera.target, WHITE, projectSettings->cavityShader);
+    lights[0].enabled = true;
+    projectSettings->UpdateLightValues(projectSettings->cavityShader, lights[0]);
+    pool->updateShader(projectSettings->cavityShader);
     
     // Init Raylib's Audio Engine
     InitAudioDevice();
@@ -68,9 +80,14 @@ int main() {
         projectSettings->MoveCamera();
         float deltaTime = GetFrameTime();
         float shaderTime = GetTime();
+        float cameraPos[3] = { projectSettings->camera.position.x, projectSettings->camera.position.y, projectSettings->camera.position.z };
+        float cameraTarget[3] = { projectSettings->camera.target.x, projectSettings->camera.target.y, projectSettings->camera.target.z };
         if (deltaTime > 0.016f) deltaTime = 0.016f;
         pool->update(deltaTime);
         projectSettings->physicsSystem->Update(deltaTime, 1, projectSettings->tempAllocator, projectSettings->jobSystem);
+        SetShaderValue(projectSettings->cavityShader, timeLoc, &shaderTime, SHADER_UNIFORM_FLOAT);
+        SetShaderValue(projectSettings->cavityShader, viewEyeLoc, cameraPos, SHADER_UNIFORM_VEC3);
+        SetShaderValue(projectSettings->cavityShader, viewCenterLoc, cameraTarget, SHADER_UNIFORM_VEC3);
         BeginTextureMode(projectSettings->mainRenderCanvas);
         ClearBackground(DARKGRAY);
         BeginMode3D(projectSettings->camera);
@@ -86,7 +103,7 @@ int main() {
         // Passes a unform sampler2D to the shader
         SetShaderValueTexture(projectSettings->cavityShader, depthLoc, projectSettings->mainRenderCanvas.depth);
         // Passes a uniform float to the shader
-        SetShaderValue(projectSettings->cavityShader, timeLoc, &shaderTime, SHADER_UNIFORM_FLOAT);
+       
         DrawTextureRec(
             projectSettings->mainRenderCanvas.texture,
             Rectangle{0.0f, 0.0f, (float)projectSettings->mainRenderCanvas.texture.width,

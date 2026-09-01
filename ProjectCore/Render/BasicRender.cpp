@@ -66,6 +66,15 @@ void BasicRender::loadMeshes()
 	
 }
 
+void BasicRender::updateShader(Shader newShader)
+{
+	for (auto body : physicsBodies)
+	{
+		body.model.materials[0].shader = newShader;
+	}
+	bPlaneRenderModel.materials[0].shader = newShader;
+}
+
 // draw outline of physic objects to make sure they aligh with render objects
 void BasicRender::renderDebug() const
 {

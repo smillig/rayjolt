@@ -36,6 +36,31 @@ public:
     virtual JPH::ValidateResult OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult& inCollisionResult) override { return JPH::ValidateResult::AcceptAllContactsForThisBodyPair; }
 };
 
+// some lighting stuff since I didn't want to mess with CMake anymore:
+typedef struct {   
+    int type;
+    bool enabled;
+    Vector3 position;
+    Vector3 target;
+    Color color;
+    float attenuation;
+    
+    // Shader locations
+    int enabledLoc;
+    int typeLoc;
+    int positionLoc;
+    int targetLoc;
+    int colorLoc;
+    int attenuationLoc;
+} Light;
+
+// Light type
+typedef enum {
+    LIGHT_DIRECTIONAL = 0,
+    LIGHT_POINT
+} LightType;
+
+
 class ProjectSettings
 {
 public:
@@ -57,7 +82,9 @@ public:
     
     void MoveCamera();
     void ResizeCanvas();
-    
+    Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shader shader);   // Create a light and get shader locations
+    void UpdateLightValues(Shader shader, Light light);  
+     
 private:
     float cameraMovementSpeed = 5.0f;
     float camreaZoomSpeed = 200.0f;
