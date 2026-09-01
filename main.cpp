@@ -36,7 +36,10 @@ int main() {
     auto projectSettings = std::make_unique<ProjectSettings>();
     auto pool = std::make_unique<BasicRender>(projectSettings->physicsSystem, projectSettings->myContactListener);
     
+    // pass the integer location (ID) of the depth as sampler2D
     int depthLoc = GetShaderLocation(projectSettings->cavityShader, "texture1");
+    // pass the int location of the float time
+    int timeLoc = GetShaderLocation(projectSettings->cavityShader, "time");
     
     // Init Raylib's Audio Engine
     InitAudioDevice();
@@ -64,6 +67,7 @@ int main() {
         }
         projectSettings->MoveCamera();
         float deltaTime = GetFrameTime();
+        float shaderTime = GetTime();
         if (deltaTime > 0.016f) deltaTime = 0.016f;
         pool->update(deltaTime);
         projectSettings->physicsSystem->Update(deltaTime, 1, projectSettings->tempAllocator, projectSettings->jobSystem);
@@ -79,7 +83,10 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK);
         BeginShaderMode(projectSettings->cavityShader);
+        // Passes a unform sampler2D to the shader
         SetShaderValueTexture(projectSettings->cavityShader, depthLoc, projectSettings->mainRenderCanvas.depth);
+        // Passes a uniform float to the shader
+        SetShaderValue(projectSettings->cavityShader, timeLoc, &shaderTime, SHADER_UNIFORM_FLOAT);
         DrawTextureRec(
             projectSettings->mainRenderCanvas.texture,
             Rectangle{0.0f, 0.0f, (float)projectSettings->mainRenderCanvas.texture.width,

@@ -42,7 +42,7 @@ uniform sampler2D texture1; // Dept not used for this example but I might see if
 const float near = 0.09;
 const float far = 200.0;
 
-const float lineThickness = 3.0;
+const float lineThickness = 4.0;
 
 // This function turns compressed GPU depth into linear distance
 float LinearizeDepth(float depth)
@@ -89,59 +89,34 @@ vec3 filterf(vec2 imageCoord)
 
 void main()
 {
-	vec2 texelSize = 1.0 / vec2(textureSize(texture0, 0));
+    // here I was playing with combining the depth and sobel:
+	// vec2 texelSize = 1.0 / vec2(textureSize(texture0, 0));
 	
-	float rawDepth = texture(texture1, fragTexCoord).r;
-	float myDepth = LinearizeDepth(rawDepth);
+	// float rawDepth = texture(texture1, fragTexCoord).r;
+	// float myDepth = LinearizeDepth(rawDepth);
 
-	float depthN = LinearizeDepth(texture(texture1, fragTexCoord + vec2(0.0, texelSize.y)).r);
-	float depthS = LinearizeDepth(texture(texture1, fragTexCoord - vec2(0.0, texelSize.y)).r);
-	float depthE = LinearizeDepth(texture(texture1, fragTexCoord + vec2(texelSize.x, 0.0)).r);
-	float depthW = LinearizeDepth(texture(texture1, fragTexCoord - vec2(texelSize.x, 0.0)).r);
+	// float depthN = LinearizeDepth(texture(texture1, fragTexCoord + vec2(0.0, texelSize.y)).r);
+	// float depthS = LinearizeDepth(texture(texture1, fragTexCoord - vec2(0.0, texelSize.y)).r);
+	// float depthE = LinearizeDepth(texture(texture1, fragTexCoord + vec2(texelSize.x, 0.0)).r);
+	// float depthW = LinearizeDepth(texture(texture1, fragTexCoord - vec2(texelSize.x, 0.0)).r);
 
-	// depth edge detection
-	float edge = abs(myDepth - depthN) + abs(myDepth - depthS) +
-	abs(myDepth - depthE) + abs(myDepth - depthW);
+	// // depth edge detection
+	// float edge = abs(myDepth - depthN) + abs(myDepth - depthS) +
+	// abs(myDepth - depthE) + abs(myDepth - depthW);
 
-	// read the color of the game
-	vec4 baseColor = texture(texture0, fragTexCoord);
-	// sobel filter
-	vec3 color = filterf(fragTexCoord);
-	// check both depth threshold and sobel
-	if (edge > 0.2 && (color.r > 0.25 || color.g > 0.25 || color.b > 0.25))
-	{
-		finalColor = vec4(0.0, 0.0, 0.0, 1.0); // Draw Black Line
-	}
-	else
-	{
-		finalColor = baseColor; // original color
-	}
+	// // read the color of the game
+	// vec4 baseColor = texture(texture0, fragTexCoord);
+	// // sobel filter
+	// vec3 color = filterf(fragTexCoord);
+	// // check both depth threshold and sobel
+	// if (edge > 0.2 && (color.r > 0.25 || color.g > 0.25 || color.b > 0.25))
+	// {
+	// 	finalColor = vec4(0.0, 0.0, 0.0, 1.0); // Draw Black Line
+	// }
+	// else
+	// {
+	// 	finalColor = baseColor; // original color
+	// }
+    vec3 color = filterf(fragTexCoord);
+    finalColor = vec4(color, 1.0);
 }
-// next thing to implement:
-
-//#define EdgeColor vec4(0.2, 0.2, 0.15, 1.0)
-//#define BackgroundColor vec4(1,0.95,0.85,1)
-//#define NoiseAmount 0.01
-//#define ErrorPeriod 30.0
-//#define ErrorRange 0.003
-
-
-//void mainImage( out vec4 fragColor, in vec2 fragCoord )
-//{
-//	float time = floor(iTime * 16.0) / 16.0;
-//	vec2 uv = fragCoord.xy / iResolution.xy;
-//
-//	float noise = (texture(iChannel1, uv * 0.5).r - 0.5) * NoiseAmount;
-//	vec2 uvs[3];
-//	uvs[0] = uv + vec2(ErrorRange * sin(ErrorPeriod * uv.y + 0.0) + noise, ErrorRange * sin(ErrorPeriod * uv.x + 0.0) + noise);
-//	uvs[1] = uv + vec2(ErrorRange * sin(ErrorPeriod * uv.y + 1.047) + noise, ErrorRange * sin(ErrorPeriod * uv.x + 3.142) + noise);
-//	uvs[2] = uv + vec2(ErrorRange * sin(ErrorPeriod * uv.y + 2.094) + noise, ErrorRange * sin(ErrorPeriod * uv.x + 1.571) + noise);
-//
-//	float edge = texture(iChannel0, uvs[0]).r * texture(iChannel0, uvs[1]).r * texture(iChannel0, uvs[2]).r;
-//	float diffuse = texture(iChannel0, uv).g;
-//
-//	float w = fwidth(diffuse) * 2.0;
-//	vec4 mCol = mix(BackgroundColor * 0.5, BackgroundColor, mix(0.0, 1.0, smoothstep(-w, w, diffuse - 0.3)));
-//	fragColor = mix(EdgeColor, mCol, edge);
-//	//fragColor = vec4(diffuse);
-//}
