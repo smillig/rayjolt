@@ -35,35 +35,45 @@ void main()
     vec3 lightDot = vec3(0.0);
     vec3 normal = normalize(fragNormal);
     vec3 viewD = normalize(viewEye - fragPosition);
-    vec3 specular = vec3(0.0);
+    vec3 specular = vec3(0.3); // lowered the shine by increasing the initial specular value from 0.0
 
     vec4 tint = colDiffuse * fragColor;
 
     vec3 light = normalize(lights[0].position - fragPosition);
 
     float NdotL = max(dot(normal, light), 0.0);
+    // first toon effect with single step and single band
     // add toon effect by cutting off the dot negative from positive
-    // even better effect from smootstep
-    float lightIntensity = smoothstep(-0.1, 0.1, NdotL);
+    // even better effect from smoothstep
+    float lightIntensity = smoothstep(-0.2, 0.2, NdotL);
 
     // original lighting before toonifying it:
     // lightDot += lights[0].color.rgb * NdotL;
     lightDot += lights[0].color.rgb * lightIntensity;
 
-    float specCo = 0.0;
-    if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewD, reflect(-(light), normal))), 32.0); // shinyness is 32 instead of a uniform
-    specular += smoothstep(0.1, 0.2, specCo);
+    // ended up playing with this a bit but didn't like it, for this one band is enough
+    // second toon effect where we have multiple bands based on light intenstity:
+    // if (NdotL > 0.75) lightDot += smoothstep(0.5, 0.9, (lights[0].color.rgb * (NdotL + (NdotL * 0.4)))); // increase intensity by 80%
+    // if (NdotL > 0.2) lightDot += smoothstep(0.8, 1.0, (lights[0].color.rgb * (NdotL + (NdotL * 0.0125))));
+    // if (NdotL > 0.0) lightDot += smoothstep(0.1, 0.2, (lights[0].color.rgb * (NdotL + (NdotL * 0.1))));
 
+    float specCo = 0.0;
+    if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewD, reflect(-(light), normal))), 64.0); // shinyness is 32 instead of a uniform
+    specular *= smoothstep(0.1, 0.3, specCo);
+
+    // gonna leave the rim light logic in comments but I don't think it works well with the line style shader
     // rim lighting - 1 minus the dot of view and normal gives the edges facing away from the camera
-    float rimLight = 1.0 - dot(viewD, normal);
+    // float rimLight = 1.0 - dot(viewD, normal);
     // multiply the rimlight by the Blinn-Phong rasing it to the power of 0.1 gives a nice curve facing the light source
-    float rimIntenstiy = rimLight * pow(NdotL, 0.1);
+    // float rimIntenstiy = rimLight * pow(NdotL, 0.1);
     // smoothe the effect for a more cartoony look
-    rimIntenstiy = smoothstep(0.6, 0.7, rimIntenstiy);
+    // rimIntenstiy = smoothstep(0.4, 0.8, rimIntenstiy);
     // add tint to the specular then multiply by dot product of the light and then mutiply by texelColor
     finalColor = (texelColor * ((tint + vec4(specular, 1.0)) * vec4(lightDot, 1.0)));
     // add our rimLighting to the product of our color, ambient and tint
-    finalColor += (texelColor * ambient * tint) + vec4(vec3(rimIntenstiy), 1.0);
+    // finalColor += (texelColor * ambient * tint) + vec4(vec3(rimIntenstiy), 1.0);
+
+    finalColor += texelColor * ambient * tint;
 
     // gamma correction
     finalColor = pow(finalColor, vec4(1.0 / 2.2));

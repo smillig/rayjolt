@@ -33,7 +33,19 @@ protected:
 	
 	Mesh bPlaneMesh;
 	Model bPlaneRenderModel;
+	Mesh NorthWallMesh;
+	Model NorhtWallModel;
+	Mesh SouthWallMesh;
+	Model SouthWallModel;
+	Mesh EastWallMesh;
+	Model EastWallModel;
+	Mesh WestWallMesh;
+	Model WestWallModel;
 	JPH::BodyID bPlaneBodyID;
+	JPH::BodyID bWallNorthBodyID;
+	JPH::BodyID bWallSouthBodyID;
+	JPH::BodyID bWallEastBodyID;
+	JPH::BodyID bWallWestBodyID;
 	
 	std::vector<RenderObjects> physicsBodies;
 	Color ball_color_[7] = {BLUE, BROWN, RED, YELLOW, ORANGE, PURPLE, GRAY};

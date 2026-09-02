@@ -29,6 +29,19 @@ BasicRender::~BasicRender()
 			UnloadModel(pBody.model);
 		}
 	}
+	pSystem->GetBodyInterface().RemoveBody(bWallNorthBodyID);
+	pSystem->GetBodyInterface().DestroyBody(bWallNorthBodyID);
+	pSystem->GetBodyInterface().RemoveBody(bWallSouthBodyID);
+	pSystem->GetBodyInterface().DestroyBody(bWallSouthBodyID);
+	pSystem->GetBodyInterface().RemoveBody(bWallEastBodyID);
+	pSystem->GetBodyInterface().DestroyBody(bWallEastBodyID);
+	pSystem->GetBodyInterface().RemoveBody(bWallWestBodyID);
+	pSystem->GetBodyInterface().DestroyBody(bWallWestBodyID);
+
+	UnloadModel(NorhtWallModel);
+	UnloadModel(SouthWallModel);
+	UnloadModel(EastWallModel);
+	UnloadModel(WestWallModel);
 }
 
 void BasicRender::initializeObjects()
@@ -43,6 +56,30 @@ void BasicRender::initializeObjects()
 	// create the object in world space and assign it as a static object on the static layer
 	JPH::BodyCreationSettings bPlaneSettings(bPlaneShape, JPH::Vec3{0.0f, -2.5f, 0.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
 	bPlaneBodyID = bodyInterface.CreateAndAddBody(bPlaneSettings, JPH::EActivation::DontActivate);
+	// Create front and back walls
+	NorthWallMesh = GenMeshCube(100.0f, 105.0f, 2.0f);
+	NorhtWallModel = LoadModelFromMesh(NorthWallMesh);
+	JPH::BoxShapeSettings bWallShapeSettings(JPH::Vec3(50.0f, 52.5f, 1.0f));
+	JPH::ShapeRefC bWallNorthShape = bWallShapeSettings.Create().Get();
+	JPH::BodyCreationSettings bWallNorthSettings(bWallNorthShape, JPH::Vec3{0.0f, 50.0f, 51.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
+	bWallNorthBodyID = bodyInterface.CreateAndAddBody(bWallNorthSettings, JPH::EActivation::DontActivate);
+	SouthWallMesh = GenMeshCube(100.0f, 105.0f, 2.0f);
+	SouthWallModel = LoadModelFromMesh(SouthWallMesh);
+	JPH::ShapeRefC bWallSouthShape = bWallShapeSettings.Create().Get();
+	JPH::BodyCreationSettings bWallSouthSettings(bWallSouthShape, JPH::Vec3{0.0f, 50.0f, -51.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
+	bWallSouthBodyID = bodyInterface.CreateAndAddBody(bWallSouthSettings, JPH::EActivation::DontActivate);
+	// Walls to the left and right
+	EastWallMesh = GenMeshCube(2.0f, 105.0f, 104.0f);
+	EastWallModel = LoadModelFromMesh(EastWallMesh);
+	JPH::BoxShapeSettings bWallEWShapeSettings(JPH::Vec3(1.0f, 52.5f, 52.0f));
+	JPH::ShapeRefC bWallEastShape = bWallEWShapeSettings.Create().Get();
+	JPH::BodyCreationSettings bWallEastSettings(bWallEastShape, JPH::Vec3{51.0f, 50.0f, 0.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
+	bWallEastBodyID = bodyInterface.CreateAndAddBody(bWallEastSettings, JPH::EActivation::DontActivate);
+	WestWallMesh = GenMeshCube(2.0f, 105.0f, 104.f);
+	WestWallModel = LoadModelFromMesh(WestWallMesh);
+	JPH::ShapeRefC bWallWestShape = bWallEWShapeSettings.Create().Get();
+	JPH::BodyCreationSettings bWallWestSettings(bWallWestShape, JPH::Vec3{-51.0f, 50.0f, 0.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
+	bWallWestBodyID = bodyInterface.CreateAndAddBody(bWallWestSettings, JPH::EActivation::DontActivate);
 	
 	for (Color curColor : ball_color_)
 	{
@@ -84,7 +121,15 @@ void BasicRender::renderDebug() const
 		
 		JPH::Vec3 bPlanePos = bodyInterface.GetPosition(bPlaneBodyID);
 		DrawModelWires(bPlaneRenderModel, Vector3{bPlanePos.GetX(), bPlanePos.GetY(), bPlanePos.GetZ()}, 1.0f, RED);
-
+		// draw invisable walls
+		JPH::Vec3 bWallNorthPos = bodyInterface.GetPosition(bWallNorthBodyID);
+		DrawModelWires(NorhtWallModel, Vector3{bWallNorthPos.GetX(), bWallNorthPos.GetY(), bWallNorthPos.GetZ()}, 1.0f, RED);
+		JPH::Vec3 bWallSouthPos = bodyInterface.GetPosition(bWallSouthBodyID);
+		DrawModelWires(SouthWallModel, Vector3{bWallSouthPos.GetX(), bWallSouthPos.GetY(), bWallSouthPos.GetZ()}, 1.0f, RED);
+		JPH::Vec3 bWallEasthPos = bodyInterface.GetPosition(bWallEastBodyID);
+		DrawModelWires(EastWallModel, Vector3{bWallEasthPos.GetX(), bWallEasthPos.GetY(), bWallEasthPos.GetZ()}, 1.0f, RED);
+		JPH::Vec3 bWallWestPos = bodyInterface.GetPosition(bWallWestBodyID);
+		DrawModelWires(WestWallModel, Vector3{bWallWestPos.GetX(), bWallWestPos.GetY(), bWallWestPos.GetZ()}, 1.0f, RED);
 		
 		for (const RenderObjects& pBodies : physicsBodies)
 		{

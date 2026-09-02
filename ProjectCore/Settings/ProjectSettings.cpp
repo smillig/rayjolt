@@ -117,7 +117,7 @@ ProjectSettings::ProjectSettings()
     // Setup for shaders
     mainRenderCanvas = LoadRenderTextureDepthTex(screenWidth, screenHeight);
     lightingShader = LoadShader("Assets/Shaders/Light/light.vert", "Assets/Shaders/Light/light.frag");
-    styleShader = LoadShader(0, "Assets/Shaders/Toon/toon.frag");
+    styleShader = LoadShader(0, "Assets/Shaders/Pencil/pencil.frag");
     // pass the integer location (ID) of the depth as sampler2D
     depthLoc = GetShaderLocation(styleShader, "texture1");
     // pass the int location of the float time
