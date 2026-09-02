@@ -22,7 +22,7 @@ public:
 	void renderGroundPlane() const;
 	void renderDynamics() const;
 	void renderDebug() const;
-	void updateShader(Shader newShader);
+	void updateModelShader(Shader newShader);
     
 protected:
 	void initializeObjects();

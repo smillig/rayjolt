@@ -71,9 +71,21 @@ public:
     static const int framerateTarget = 60;
     
     RenderTexture2D mainRenderCanvas;
-    Shader cavityShader;
-    
+    Shader lightingShader;
+    Shader styleShader;
+
     Camera camera = {0};
+
+    int depthLoc = {0};
+    int timeLoc = {0};
+    int viewEyeLoc = {0};
+    int viewCenterLoc = {0};
+    int ambientLoc = {0};
+
+    float cameraPos[3] = {0.0f, 0.0f, 0.0f};
+    float cameraTarget[3]= {0.0f, 0.0f, 0.0f};
+    float shaderTime = {0};
+    
     
     JPH::TempAllocatorImpl* tempAllocator = nullptr;
     JPH::JobSystemThreadPool* jobSystem = nullptr;
@@ -83,7 +95,9 @@ public:
     void MoveCamera();
     void ResizeCanvas();
     Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shader shader);   // Create a light and get shader locations
-    void UpdateLightValues(Shader shader, Light light);  
+    void UpdateLightValues(Shader shader, Light light);
+    void updateDepthTexture();
+    void updateLightShader();
      
 private:
     float cameraMovementSpeed = 5.0f;

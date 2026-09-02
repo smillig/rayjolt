@@ -66,9 +66,9 @@ void BasicRender::loadMeshes()
 	
 }
 
-void BasicRender::updateShader(Shader newShader)
+void BasicRender::updateModelShader(Shader newShader)
 {
-	for (auto body : physicsBodies)
+	for (RenderObjects body : physicsBodies)
 	{
 		body.model.materials[0].shader = newShader;
 	}

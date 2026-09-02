@@ -116,7 +116,23 @@ ProjectSettings::ProjectSettings()
     
     // Setup for shaders
     mainRenderCanvas = LoadRenderTextureDepthTex(screenWidth, screenHeight);
-    cavityShader = LoadShader("Assets/Shaders/Light/light.vert", "Assets/Shaders/Light/light.frag");
+    lightingShader = LoadShader("Assets/Shaders/Light/light.vert", "Assets/Shaders/Light/light.frag");
+    styleShader = LoadShader(0, "Assets/Shaders/Toon/toon.frag");
+    // pass the integer location (ID) of the depth as sampler2D
+    depthLoc = GetShaderLocation(styleShader, "texture1");
+    // pass the int location of the float time
+    timeLoc = GetShaderLocation(styleShader, "time");
+    viewEyeLoc = GetShaderLocation(lightingShader, "viewEye");
+    viewCenterLoc = GetShaderLocation(lightingShader, "viewCenter");
+    ambientLoc = GetShaderLocation(lightingShader, "ambient");
+    float amb[4] = { 0.35f, 0.35f, 0.35f, 1.0f };
+    SetShaderValue(lightingShader, ambientLoc, amb, SHADER_UNIFORM_VEC4);
+    
+    // raylib lighting
+    Light lights[1] = { 0 }; // Use MAX_LIGHTS = 4
+    lights[0] = CreateLight(LIGHT_POINT, Vector3{ 0.0f, 15.0f, 0.0f }, camera.target, WHITE, lightingShader);
+    lights[0].enabled = true;
+    UpdateLightValues(lightingShader, lights[0]);
     // TODO: Setup multi canvas rendering for fixing the debug draw issue of it not being culled
     //RenderTexture2D debugCanvas = LoadRenderTextureDepthTex(screenWidth, screenHeight);
     
@@ -125,6 +141,14 @@ ProjectSettings::ProjectSettings()
     camera.up = Vector3( 0.0f, 1.0f, 0.0f );
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
+
+    cameraPos[0] = camera.position.x;
+    cameraPos[1] = camera.position.y;
+    cameraPos[2] = camera.position.z;
+    cameraTarget[0] = camera.target.x;
+    cameraTarget[1] = camera.target.y;
+    cameraTarget[2] = camera.target.z;
+    shaderTime = GetTime();
     
     tempAllocator = new JPH::TempAllocatorImpl(10 * 1024 * 1024); 
     jobSystem = new JPH::JobSystemThreadPool(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1);
@@ -146,7 +170,8 @@ ProjectSettings::~ProjectSettings()
     delete jobSystem;
     delete tempAllocator;
     
-    UnloadShader(cavityShader);
+    UnloadShader(lightingShader);
+    UnloadShader(styleShader);
     UnloadRenderTextureDepthTex(mainRenderCanvas);
 }
 
@@ -178,6 +203,7 @@ void ProjectSettings::ResizeCanvas()
     UnloadRenderTextureDepthTex(mainRenderCanvas);
     
     mainRenderCanvas = LoadRenderTextureDepthTex(GetScreenWidth(), GetScreenHeight());
+    depthLoc = GetShaderLocation(styleShader, "texture1");
 }
 
 // Create a light and get shader locations
@@ -229,4 +255,22 @@ void ProjectSettings::UpdateLightValues(Shader shader, Light light)
                        (float)light.color.b/(float)255, (float)light.color.a/(float)255 };
     SetShaderValue(shader, light.colorLoc, color, SHADER_UNIFORM_VEC4);
 }
+void ProjectSettings::updateDepthTexture()
+{
+    SetShaderValueTexture(styleShader, depthLoc, mainRenderCanvas.depth);
+}
 
+void ProjectSettings::updateLightShader()
+{
+    cameraPos[0] = camera.position.x;
+    cameraPos[1] = camera.position.y;
+    cameraPos[2] = camera.position.z;
+    cameraTarget[0] = camera.target.x;
+    cameraTarget[1] = camera.target.y;
+    cameraTarget[2] = camera.target.z;
+    shaderTime = GetTime();
+
+    SetShaderValue(lightingShader, timeLoc, &shaderTime, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(lightingShader, viewEyeLoc, cameraPos, SHADER_UNIFORM_VEC3);
+    SetShaderValue(lightingShader, viewCenterLoc, cameraTarget, SHADER_UNIFORM_VEC3);
+}
