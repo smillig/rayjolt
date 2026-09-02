@@ -81,6 +81,7 @@ public:
     int viewEyeLoc = {0};
     int viewCenterLoc = {0};
     int ambientLoc = {0};
+    int ambientLocStyle = {0};
 
     float cameraPos[3] = {0.0f, 0.0f, 0.0f};
     float cameraTarget[3]= {0.0f, 0.0f, 0.0f};

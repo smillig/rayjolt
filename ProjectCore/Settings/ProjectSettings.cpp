@@ -125,8 +125,10 @@ ProjectSettings::ProjectSettings()
     viewEyeLoc = GetShaderLocation(lightingShader, "viewEye");
     viewCenterLoc = GetShaderLocation(lightingShader, "viewCenter");
     ambientLoc = GetShaderLocation(lightingShader, "ambient");
+    ambientLocStyle = GetShaderLocation(styleShader, "ambient");
     float amb[4] = { 0.35f, 0.35f, 0.35f, 1.0f };
     SetShaderValue(lightingShader, ambientLoc, amb, SHADER_UNIFORM_VEC4);
+    SetShaderValue(styleShader, ambientLocStyle, amb, SHADER_UNIFORM_VEC4);
     
     // raylib lighting
     Light lights[1] = { 0 }; // Use MAX_LIGHTS = 4
