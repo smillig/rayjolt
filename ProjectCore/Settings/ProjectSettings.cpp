@@ -126,12 +126,29 @@ ProjectSettings::ProjectSettings()
     viewCenterLoc = GetShaderLocation(lightingShader, "viewCenter");
     ambientLoc = GetShaderLocation(lightingShader, "ambient");
     ambientLocStyle = GetShaderLocation(styleShader, "ambient");
-    float amb[4] = { 0.35f, 0.35f, 0.35f, 1.0f };
-    SetShaderValue(lightingShader, ambientLoc, amb, SHADER_UNIFORM_VEC4);
-    SetShaderValue(styleShader, ambientLocStyle, amb, SHADER_UNIFORM_VEC4);
+    toonLoc = GetShaderLocation(lightingShader, "toon");
+
+    edgeColorLoc = GetShaderLocation(styleShader, "edgeColor");;
+    noiseAmountLoc = GetShaderLocation(styleShader, "noiseAmount");
+    errorPeriodLoc = GetShaderLocation(styleShader, "errorPeriod");
+    errorRangeLoc = GetShaderLocation(styleShader, "errorRange");
+    lineColorBlendLoc = GetShaderLocation(styleShader, "lineColorBlend");
+    toggleSobelLoc = GetShaderLocation(styleShader, "sobelEnabled");
+    toggleDepthLoc = GetShaderLocation(styleShader, "depthLineEnabled");
+
+    SetShaderValue(lightingShader, ambientLoc, &ambientStrength, SHADER_UNIFORM_VEC4);
+    SetShaderValue(styleShader, ambientLocStyle, &ambientStrength, SHADER_UNIFORM_VEC4);
+    SetShaderValue(lightingShader, toonLoc, &toonEnabled, SHADER_UNIFORM_INT);
+
+    SetShaderValue(styleShader, edgeColorLoc, &EdgeColor, SHADER_UNIFORM_VEC3);
+    SetShaderValue(styleShader, noiseAmountLoc, &NoiseAmount, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, errorPeriodLoc, &ErrorPeriod, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, errorRangeLoc, &ErrorRange, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, toggleDepthLoc, &bIsDepthLineEnabled, SHADER_UNIFORM_INT);
+    SetShaderValue(styleShader, toggleSobelLoc, &bIsSobelLineEnabled, SHADER_UNIFORM_INT);
     
     // raylib lighting
-    Light lights[1] = { 0 }; // Use MAX_LIGHTS = 4
+     // Use MAX_LIGHTS = 4
     lights[0] = CreateLight(LIGHT_POINT, Vector3{ 0.0f, 5.0f, 0.0f }, camera.target, WHITE, lightingShader);
     lights[0].enabled = true;
     UpdateLightValues(lightingShader, lights[0]);
@@ -275,4 +292,55 @@ void ProjectSettings::updateLightShader()
     SetShaderValue(lightingShader, timeLoc, &shaderTime, SHADER_UNIFORM_FLOAT);
     SetShaderValue(lightingShader, viewEyeLoc, cameraPos, SHADER_UNIFORM_VEC3);
     SetShaderValue(lightingShader, viewCenterLoc, cameraTarget, SHADER_UNIFORM_VEC3);
+    SetShaderValue(lightingShader, ambientLoc, &ambientStrength, SHADER_UNIFORM_VEC4);
+    SetShaderValue(lightingShader, toonLoc, &toonEnabled, SHADER_UNIFORM_INT);
+}
+
+void ProjectSettings::toggleLights()
+{
+    lights[0].enabled = !lights[0].enabled;
+    UpdateLightValues(lightingShader, lights[0]);
+}
+
+void ProjectSettings::toggleToon()
+{
+    toonEnabled = toonEnabled ? 0 : 1;
+}
+
+void ProjectSettings::updateNoiseAmount(float nAmount)
+{
+    NoiseAmount = nAmount;
+    SetShaderValue(styleShader, noiseAmountLoc, &NoiseAmount, SHADER_UNIFORM_FLOAT);
+}
+void ProjectSettings::updateErrorPeriod(float ePeriodAmt)
+{
+    ErrorPeriod = ePeriodAmt;
+    SetShaderValue(styleShader, errorPeriodLoc, &ErrorPeriod, SHADER_UNIFORM_FLOAT);
+}
+void ProjectSettings::updateErrorRange(float eRangeAmt)
+{
+    ErrorRange = eRangeAmt;
+    SetShaderValue(styleShader, errorRangeLoc, &ErrorRange, SHADER_UNIFORM_FLOAT);
+}
+void ProjectSettings::updateLineColorBlend(float lineColorAmt)
+{
+    LineColorBlendAmount = lineColorAmt;
+    SetShaderValue(styleShader, lineColorBlendLoc, &LineColorBlendAmount, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updateLineColor(float NewColor[3])
+{
+    Vector3 AdjustedColor = Vector3{NewColor[0], NewColor[1], NewColor[2]};
+    SetShaderValue(styleShader, edgeColorLoc, &AdjustedColor, SHADER_UNIFORM_VEC3);
+}
+
+void ProjectSettings::toggleSobel(bool toggledSobel)
+{
+    bIsSobelLineEnabled = toggledSobel ? 1 : 0;
+    SetShaderValue(styleShader, toggleSobelLoc, &bIsSobelLineEnabled, SHADER_UNIFORM_INT);
+}
+void ProjectSettings::toggleDepthLine(bool toggledDepth)
+{
+    bIsDepthLineEnabled = toggledDepth ? 1 : 0;
+    SetShaderValue(styleShader, toggleDepthLoc, &bIsDepthLineEnabled, SHADER_UNIFORM_INT);
 }

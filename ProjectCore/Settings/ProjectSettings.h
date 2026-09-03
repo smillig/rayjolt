@@ -86,7 +86,8 @@ public:
     float cameraPos[3] = {0.0f, 0.0f, 0.0f};
     float cameraTarget[3]= {0.0f, 0.0f, 0.0f};
     float shaderTime = {0};
-    
+
+    Vector4 ambientStrength = {0.1f, 0.1f, 0.1f, 1.0f};
     
     JPH::TempAllocatorImpl* tempAllocator = nullptr;
     JPH::JobSystemThreadPool* jobSystem = nullptr;
@@ -99,8 +100,35 @@ public:
     void UpdateLightValues(Shader shader, Light light);
     void updateDepthTexture();
     void updateLightShader();
+    void toggleLights();
+    void toggleToon();
+    void updateNoiseAmount(float nAmount);
+    void updateErrorPeriod(float ePeriodAmt);
+    void updateErrorRange(float eRangeAmt);
+    void updateLineColorBlend(float lineColorAmt);
+    void updateLineColor(float NewColor[3]);
+    void toggleSobel(bool toggledSobel);
+    void toggleDepthLine(bool toggledDepth);
      
 private:
+    int toonEnabled = {1};
+    int toonLoc = {0};
+    int edgeColorLoc = {0};
+    int noiseAmountLoc = {0};
+    int errorPeriodLoc = {0};
+    int errorRangeLoc = {0};
+    int lineColorBlendLoc = {0};
+    int toggleDepthLoc = {0};
+    int toggleSobelLoc = {0};
+
+    Vector3 EdgeColor = Vector3{0.2f, 0.2f, 0.25f};
+    float NoiseAmount = {0.001f}; // default 0.002 - how fuzzy the lines are
+    float ErrorPeriod = {5.0f}; // default 30.0  - how wavy the lines are
+    float ErrorRange = {0.0015f}; // default 0.003 - how offset the different lines are from each other
+    float LineColorBlendAmount = {1.0f};
+    int bIsDepthLineEnabled = {1};
+    int bIsSobelLineEnabled = {1};
+
     float cameraMovementSpeed = 5.0f;
     float camreaZoomSpeed = 200.0f;
     
@@ -108,4 +136,6 @@ private:
     float panSpeed = 0.5f;
     bool rotateAroundTarget = true;
     bool lockView = true;
+
+    Light lights[1] = { 0 };
 };

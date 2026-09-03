@@ -38,6 +38,15 @@ int main() {
     
     // in raylib for the lighting shader to work the shader must be updated in the model material properties
     pool->updateModelShader(projectSettings->lightingShader);
+    // slider stuff for ImGui and playing with shaders:
+    float ambientSlider = 0.3f;
+    float noiseAmountSlider = {0.001f}; 
+    float errorPeriodSlider = {5.0f}; 
+    float errorRangeSlider = {0.0015f}; 
+    float lineColorBlendAmountSlider = {1.0f};
+    float edgeColorPicker[3] = {0.2f, 0.2f, 0.25f};
+    bool bIsLineDepthEnabled = true;
+    bool bIsLineSobelEnabled = true;
     
     // Init Raylib's Audio Engine
     InitAudioDevice();
@@ -97,19 +106,39 @@ int main() {
         EndMode3D();
         rlImGuiBegin();
         
-        ImGui::Begin("Engine Debug");
+        ImGui::Begin("Shader Settings");
         ImGui::Text("FPS: %i", GetFPS());
         
         
-        if (ImGui::Button("Test Button.")) {
-            
-            
+        if (ImGui::Button("Toggle Lights!")) {
+            projectSettings->toggleLights();
         }
-        
+        if (ImGui::Button("Toggle Toon")){
+            projectSettings->toggleToon();
+        }
+
+        ImGui::SliderFloat("Adjust ambient", &ambientSlider, 0.0f, 1.0f);
+
+        ImGui::Text("Line Style Shader Customization:");
+
+        ImGui::Checkbox("Enable Line Depth Pass", &bIsLineDepthEnabled);
+        ImGui::Checkbox("Enable Line Soble Detection", &bIsLineSobelEnabled);
+        ImGui::SliderFloat("Adjust Noise Amount", &noiseAmountSlider, 0.0001f, 0.01f);
+        ImGui::SliderFloat("Adjust Error Period", &errorPeriodSlider, 0.1f, 100.0f);
+        ImGui::SliderFloat("Adjust Error Range", &errorRangeSlider, 0.00015f, 0.015f);
+        ImGui::ColorPicker3("Line Color", edgeColorPicker);
+
         ImGui::End();
         rlImGuiEnd();
 
         EndDrawing();
+        projectSettings->ambientStrength = Vector4{ambientSlider, ambientSlider, ambientSlider, 1.0f};
+        projectSettings->updateNoiseAmount(noiseAmountSlider);
+        projectSettings->updateErrorPeriod(errorPeriodSlider);
+        projectSettings->updateErrorRange(errorRangeSlider);
+        projectSettings->updateLineColor(edgeColorPicker);
+        projectSettings->toggleDepthLine(bIsLineDepthEnabled);
+        projectSettings->toggleSobel(bIsLineSobelEnabled);
     }
     
     pool.reset();

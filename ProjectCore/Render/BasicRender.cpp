@@ -192,9 +192,6 @@ void BasicRender::renderDebug() const
 void BasicRender::renderGroundPlane() const
 {
 	DrawModel(bPlaneRenderModel, Vector3{0.0f, -2.5f, 0.0f}, 1.0f, GREEN);
-	// JPH::Vec3 AgitatorPos = pSystem->GetBodyInterface().GetPosition(bAgitatorBodyID);
-	// JPH::Quat AgitatorRot = pSystem->GetBodyInterface().GetRotation(bAgitatorBodyID);
-	// DrawModel(AgitatorModel, Vector3(AgitatorPos.GetX(), AgitatorPos.GetY(), AgitatorPos.GetZ()));
 }
 
 // render objects on the dynamic layer
