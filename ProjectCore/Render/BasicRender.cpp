@@ -37,6 +37,8 @@ BasicRender::~BasicRender()
 	pSystem->GetBodyInterface().DestroyBody(bWallEastBodyID);
 	pSystem->GetBodyInterface().RemoveBody(bWallWestBodyID);
 	pSystem->GetBodyInterface().DestroyBody(bWallWestBodyID);
+	pSystem->GetBodyInterface().RemoveBody(bAgitatorBodyID);
+	pSystem->GetBodyInterface().DestroyBody(bAgitatorBodyID);
 
 	UnloadModel(NorhtWallModel);
 	UnloadModel(SouthWallModel);
@@ -80,6 +82,17 @@ void BasicRender::initializeObjects()
 	JPH::ShapeRefC bWallWestShape = bWallEWShapeSettings.Create().Get();
 	JPH::BodyCreationSettings bWallWestSettings(bWallWestShape, JPH::Vec3{-51.0f, 50.0f, 0.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::STATIC);
 	bWallWestBodyID = bodyInterface.CreateAndAddBody(bWallWestSettings, JPH::EActivation::DontActivate);
+
+	AgitatorMesh = GenMeshCube(145.0f, 0.5f, 1.0f);
+	AgitatorModel = LoadModelFromMesh(AgitatorMesh);
+	JPH::BoxShapeSettings bAgitatorShapeSettings(JPH::Vec3(72.5f, 0.25f, 0.5f));
+	JPH::ShapeRefC bAgitatorShape = bAgitatorShapeSettings.Create().Get();
+	JPH::BodyCreationSettings bAgitatorSettings(bAgitatorShape, JPH::Vec3{0.0f, 0.5f, 0.0f}, JPH::Quat::sIdentity(), JPH::EMotionType::Kinematic, Layers::STATIC);
+	bAgitatorBodyID = bodyInterface.CreateAndAddBody(bAgitatorSettings, JPH::EActivation::Activate);
+	bodyInterface.SetGravityFactor(bAgitatorBodyID, 0.0f);
+	bodyInterface.SetAngularVelocity(bAgitatorBodyID, JPH::Vec3(0.0f, 1.5f, 0.0f));
+	bodyInterface.ActivateBody(bAgitatorBodyID);
+	
 	
 	for (Color curColor : ball_color_)
 	{
@@ -130,6 +143,16 @@ void BasicRender::renderDebug() const
 		DrawModelWires(EastWallModel, Vector3{bWallEasthPos.GetX(), bWallEasthPos.GetY(), bWallEasthPos.GetZ()}, 1.0f, RED);
 		JPH::Vec3 bWallWestPos = bodyInterface.GetPosition(bWallWestBodyID);
 		DrawModelWires(WestWallModel, Vector3{bWallWestPos.GetX(), bWallWestPos.GetY(), bWallWestPos.GetZ()}, 1.0f, RED);
+		JPH::Vec3 bAgitatorPos = bodyInterface.GetPosition(bAgitatorBodyID);
+		JPH::Quat bAgitatorRot = bodyInterface.GetRotation(bAgitatorBodyID);
+		Vector3 raylibPos = { bAgitatorPos.GetX(), bAgitatorPos.GetY(), bAgitatorPos.GetZ() };
+		Quaternion raylibQuat = { bAgitatorRot.GetX(), bAgitatorRot.GetY(), bAgitatorRot.GetZ(), bAgitatorRot.GetW() };
+		
+		Vector3 rotationAxis = Vector3{0.0f, 1.0f, 0.0f};
+		float AgitatorRotDegrees;
+		QuaternionToAxisAngle(raylibQuat, &rotationAxis, &AgitatorRotDegrees);
+		AgitatorRotDegrees *= RAD2DEG;
+		DrawModelWiresEx(AgitatorModel, raylibPos, rotationAxis, AgitatorRotDegrees, Vector3{1.0f, 1.0f, 1.0f}, BLUE);
 		
 		for (const RenderObjects& pBodies : physicsBodies)
 		{
@@ -169,6 +192,9 @@ void BasicRender::renderDebug() const
 void BasicRender::renderGroundPlane() const
 {
 	DrawModel(bPlaneRenderModel, Vector3{0.0f, -2.5f, 0.0f}, 1.0f, GREEN);
+	// JPH::Vec3 AgitatorPos = pSystem->GetBodyInterface().GetPosition(bAgitatorBodyID);
+	// JPH::Quat AgitatorRot = pSystem->GetBodyInterface().GetRotation(bAgitatorBodyID);
+	// DrawModel(AgitatorModel, Vector3(AgitatorPos.GetX(), AgitatorPos.GetY(), AgitatorPos.GetZ()));
 }
 
 // render objects on the dynamic layer

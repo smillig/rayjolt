@@ -41,11 +41,14 @@ protected:
 	Model EastWallModel;
 	Mesh WestWallMesh;
 	Model WestWallModel;
+	Mesh AgitatorMesh;
+	Model AgitatorModel;
 	JPH::BodyID bPlaneBodyID;
 	JPH::BodyID bWallNorthBodyID;
 	JPH::BodyID bWallSouthBodyID;
 	JPH::BodyID bWallEastBodyID;
 	JPH::BodyID bWallWestBodyID;
+	JPH::BodyID bAgitatorBodyID;
 	
 	std::vector<RenderObjects> physicsBodies;
 	Color ball_color_[7] = {BLUE, BROWN, RED, YELLOW, ORANGE, PURPLE, GRAY};

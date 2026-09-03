@@ -13,10 +13,10 @@
 class BPLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface {
 public:
     BPLayerInterfaceImpl() {
-        mObjectToBroadPhase[Layers::STATIC] = BroadPhaseLayers::NON_MOVING;
+        mObjectToBroadPhase[Layers::STATIC] = BroadPhaseLayers::MOVING;
         mObjectToBroadPhase[Layers::SENSOR] = BroadPhaseLayers::NON_MOVING;
         
-        mObjectToBroadPhase[Layers::DYNAMIC] = BroadPhaseLayers::NON_MOVING;
+        mObjectToBroadPhase[Layers::DYNAMIC] = BroadPhaseLayers::MOVING;
     }
     virtual JPH::uint GetNumBroadPhaseLayers() const override { return BroadPhaseLayers::NUM_LAYERS; }
     virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override { return mObjectToBroadPhase[inLayer]; }
@@ -132,7 +132,7 @@ ProjectSettings::ProjectSettings()
     
     // raylib lighting
     Light lights[1] = { 0 }; // Use MAX_LIGHTS = 4
-    lights[0] = CreateLight(LIGHT_POINT, Vector3{ 0.0f, 15.0f, 0.0f }, camera.target, WHITE, lightingShader);
+    lights[0] = CreateLight(LIGHT_POINT, Vector3{ 0.0f, 5.0f, 0.0f }, camera.target, WHITE, lightingShader);
     lights[0].enabled = true;
     UpdateLightValues(lightingShader, lights[0]);
     // TODO: Setup multi canvas rendering for fixing the debug draw issue of it not being culled
