@@ -90,8 +90,8 @@ void main()
     if (depthViewEnabled == 1)
     {
          float rawDepth = texture(texture1, fragTexCoord).r;
-    float CurDepth = LinearizeDepth(rawDepth) / depthFar;
-    finalColor = vec4(CurDepth, CurDepth, CurDepth, 1.0);
+        float CurDepth = LinearizeDepth(rawDepth) / depthFar;
+        finalColor = vec4(CurDepth, CurDepth, CurDepth, 1.0);
     }
 
     else

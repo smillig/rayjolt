@@ -133,7 +133,7 @@ int main() {
         ImGui::Checkbox("Enable Line Depth Pass", &bIsLineDepthEnabled);
         ImGui::Checkbox("Enable Line Soble Detection", &bIsLineSobelEnabled);
         ImGui::SliderFloat("Adjust Noise Amount", &noiseAmountSlider, 0.0001f, 0.01f);
-        ImGui::SliderFloat("Adjust Error Period", &errorPeriodSlider, 0.1f, 100.0f);
+        ImGui::SliderFloat("Adjust Error Period", &errorPeriodSlider, 0.1f, 300.0f);
         ImGui::SliderFloat("Adjust Error Range", &errorRangeSlider, 0.00015f, 0.015f);
         ImGui::SliderFloat("Adjust Depth Near Plane", &depthNearPlaneSlider, 0.01, 1.5f);
         ImGui::SliderFloat("Adjust Depth Far Plane", &depthFarPlaneSlider, 5.0f, 600.0f);
