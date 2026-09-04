@@ -19,12 +19,14 @@ uniform float errorPeriod;
 uniform float errorRange;
 uniform int depthLineEnabled;
 uniform int sobelEnabled;
+uniform int depthViewEnabled;
+uniform float depthNear; // depth contrast for near plane (close objects are black)
+uniform float depthFar; // depth contrast for far plane (horizon is white)
+uniform float sobelKernelSize; // adjust line thickness of sobel
+uniform float depthSensitivity; // adjust line thickness of depth
+uniform float depthEdgeThres;
+uniform float sobelEdgeThres;
 
-const float near = 0.09; // depth contrast for near plane (close objects are black)
-const float far = 100.0; // depth contrast for far plane (horizon is white)
-
-const float kernelSize = 1.5;       // adjust line thickness of sobel
-const float depthSensitivity = 2.0; // adjust line thickness of depth
 
 // random noise generation
 float randomNoise(vec2 st)
@@ -35,14 +37,14 @@ float randomNoise(vec2 st)
 float LinearizeDepth(float depth)
 {
     float z = depth * 2.0 - 1.0;
-    return (2.0 * near * far) / (far + near - z * (far - near));
+    return (2.0 * depthNear * depthFar) / (depthFar + depthNear - z * (depthFar - depthNear));
 }
 
 float samplef(const int x, const int y, vec2 imageCoord)
 {
     vec2 texelSize = 1.0 / vec2(textureSize(texture0, 0));
 
-    vec2 offsetUV = imageCoord + (vec2(x, y) * texelSize * kernelSize);
+    vec2 offsetUV = imageCoord + (vec2(x, y) * texelSize * sobelKernelSize);
     vec3 color = texture(texture0, offsetUV).rgb;
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
@@ -61,7 +63,6 @@ bool checkEdge(vec2 uv)
                         + samplef(1, -1, uv) * -1.0 + samplef(1, 0, uv) * -2.0 + samplef(1, 1, uv) * -1.0;
 
         sobelEdge = sqrt(vertKern * vertKern + horizKern * horizKern);
-        // float sobelEdge = (samp.x + samp.y + samp.z) * 3.0;
     }
 
     float depthEdge = 0.0;
@@ -77,7 +78,7 @@ bool checkEdge(vec2 uv)
         depthEdge = abs(myDepth - depthN) + abs(myDepth - depthS) + abs(myDepth - depthE) + abs(myDepth - depthW);
     }
 
-    if (depthEdge > 0.3 || sobelEdge > 0.15)
+    if (depthEdge > depthEdgeThres || sobelEdge > sobelEdgeThres)
     {
         return true; // edge found
     }
@@ -86,24 +87,35 @@ bool checkEdge(vec2 uv)
 
 void main()
 {
-    float noise = (randomNoise(fragTexCoord) - 0.5) * noiseAmount;
-
-    // different attemt, generate noise on the UV rather than 3 passes
-    vec2 displacedUV = fragTexCoord + vec2(
-        errorRange * sin(errorPeriod * fragTexCoord.y + time) + noise,
-        errorRange * sin(errorPeriod * fragTexCoord.x + time) + noise
-    );
-
-    vec4 baseColor = texture(texture0, fragTexCoord);
-
-    if (checkEdge(displacedUV))
+    if (depthViewEnabled == 1)
     {
-        finalColor = vec4(edgeColor, 1.0);
+         float rawDepth = texture(texture1, fragTexCoord).r;
+    float CurDepth = LinearizeDepth(rawDepth) / depthFar;
+    finalColor = vec4(CurDepth, CurDepth, CurDepth, 1.0);
     }
-    else 
+
+    else
     {
-        finalColor = baseColor;
+        float noise = (randomNoise(fragTexCoord) - 0.5) * noiseAmount;
+
+        // different attemt, generate noise on the UV rather than 3 passes
+        vec2 displacedUV = fragTexCoord + vec2(
+            errorRange * sin(errorPeriod * fragTexCoord.y + time) + noise,
+            errorRange * sin(errorPeriod * fragTexCoord.x + time) + noise
+        );
+
+        vec4 baseColor = texture(texture0, fragTexCoord);
+
+        if (checkEdge(displacedUV))
+        {
+            finalColor = vec4(edgeColor, 1.0);
+        }
+        else 
+        {
+            finalColor = baseColor;
+        }
     }
+    
     // original attempt; much more costly
     // check the edge of all 3 lines
     

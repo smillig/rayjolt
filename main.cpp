@@ -47,6 +47,12 @@ int main() {
     float edgeColorPicker[3] = {0.2f, 0.2f, 0.25f};
     bool bIsLineDepthEnabled = true;
     bool bIsLineSobelEnabled = true;
+    float depthNearPlaneSlider = {0.09}; // depth contrast for near plane (close objects are black)
+    float depthFarPlaneSlider = {100.0}; // depth contrast for far plane (horizon is white)
+    float sobelKernelSizeSlider = {1.5};       // adjust line thickness of sobel
+    float depthSensitivitySlider = {2.0};
+    float depthEdgeThresholdSlider = {0.3}; // threshold before considering a line is present for depth
+    float sobelEdgeThresholdSlider = {0.15}; // threshold before considering a line is present for sobel
     
     // Init Raylib's Audio Engine
     InitAudioDevice();
@@ -116,6 +122,9 @@ int main() {
         if (ImGui::Button("Toggle Toon")){
             projectSettings->toggleToon();
         }
+        if (ImGui::Button("Toggle Depth Buffer View")){
+            projectSettings->toggleDepthBufferView();
+        }
 
         ImGui::SliderFloat("Adjust ambient", &ambientSlider, 0.0f, 1.0f);
 
@@ -126,6 +135,12 @@ int main() {
         ImGui::SliderFloat("Adjust Noise Amount", &noiseAmountSlider, 0.0001f, 0.01f);
         ImGui::SliderFloat("Adjust Error Period", &errorPeriodSlider, 0.1f, 100.0f);
         ImGui::SliderFloat("Adjust Error Range", &errorRangeSlider, 0.00015f, 0.015f);
+        ImGui::SliderFloat("Adjust Depth Near Plane", &depthNearPlaneSlider, 0.01, 1.5f);
+        ImGui::SliderFloat("Adjust Depth Far Plane", &depthFarPlaneSlider, 5.0f, 600.0f);
+        ImGui::SliderFloat("Adjust Sobel Line Size", &sobelKernelSizeSlider, 1.1f, 5.5f);
+        ImGui::SliderFloat("Adjust Depth Line Size", &depthSensitivitySlider, 1.1f, 5.5f);
+        ImGui::SliderFloat("Adjust Edge Threshold for depth", &depthEdgeThresholdSlider, 0.01f, 1.0f);
+        ImGui::SliderFloat("Adjust Edge Threshold for Sobel Kernel", &sobelEdgeThresholdSlider, 0.01f, 1.0f);
         ImGui::ColorPicker3("Line Color", edgeColorPicker);
 
         ImGui::End();
@@ -139,6 +154,12 @@ int main() {
         projectSettings->updateLineColor(edgeColorPicker);
         projectSettings->toggleDepthLine(bIsLineDepthEnabled);
         projectSettings->toggleSobel(bIsLineSobelEnabled);
+        projectSettings->updateNearPlane(depthNearPlaneSlider);
+        projectSettings->updateFarPlane(depthFarPlaneSlider);
+        projectSettings->updateSobelKernelSize(sobelKernelSizeSlider);
+        projectSettings->updatedpethSensitivity(depthSensitivitySlider);
+        projectSettings->updateEdgeThresh(depthEdgeThresholdSlider);
+        projectSettings->updateSobelEdgeThres(sobelEdgeThresholdSlider);
     }
     
     pool.reset();

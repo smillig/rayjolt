@@ -135,6 +135,13 @@ ProjectSettings::ProjectSettings()
     lineColorBlendLoc = GetShaderLocation(styleShader, "lineColorBlend");
     toggleSobelLoc = GetShaderLocation(styleShader, "sobelEnabled");
     toggleDepthLoc = GetShaderLocation(styleShader, "depthLineEnabled");
+    depthNearPlaneLoc = GetShaderLocation(styleShader, "depthNear");
+    depthFarPlaneLoc = GetShaderLocation(styleShader, "depthFar");
+    sobelKernelSizeLoc = GetShaderLocation(styleShader, "sobelKernelSize");
+    depthSensitivityLoc = GetShaderLocation(styleShader, "depthSensitivity");
+    depthEdgeThresholdLoc = GetShaderLocation(styleShader, "depthEdgeThres");
+    sobelEdgeThresholdLoc = GetShaderLocation(styleShader, "sobelEdgeThres");
+    depthViewEnabledLoc = GetShaderLocation(styleShader, "depthViewEnabled");
 
     SetShaderValue(lightingShader, ambientLoc, &ambientStrength, SHADER_UNIFORM_VEC4);
     SetShaderValue(styleShader, ambientLocStyle, &ambientStrength, SHADER_UNIFORM_VEC4);
@@ -146,6 +153,13 @@ ProjectSettings::ProjectSettings()
     SetShaderValue(styleShader, errorRangeLoc, &ErrorRange, SHADER_UNIFORM_FLOAT);
     SetShaderValue(styleShader, toggleDepthLoc, &bIsDepthLineEnabled, SHADER_UNIFORM_INT);
     SetShaderValue(styleShader, toggleSobelLoc, &bIsSobelLineEnabled, SHADER_UNIFORM_INT);
+    SetShaderValue(styleShader, depthNearPlaneLoc, &depthNearPlane, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, depthFarPlaneLoc, &depthFarPlane, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, sobelKernelSizeLoc, &sobelKernelSize, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, depthSensitivityLoc, &depthSensitivity, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, depthEdgeThresholdLoc, &depthEdgeThreshold, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, sobelEdgeThresholdLoc, &sobelEdgeThreshold, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(styleShader, depthViewEnabledLoc, &depthViewEnabled, SHADER_UNIFORM_INT);
     
     // raylib lighting
      // Use MAX_LIGHTS = 4
@@ -307,6 +321,12 @@ void ProjectSettings::toggleToon()
     toonEnabled = toonEnabled ? 0 : 1;
 }
 
+void ProjectSettings::toggleDepthBufferView()
+{
+    depthViewEnabled = depthViewEnabled ? 0 : 1;
+    SetShaderValue(styleShader, depthViewEnabledLoc, &depthViewEnabled, SHADER_UNIFORM_INT);
+}
+
 void ProjectSettings::updateNoiseAmount(float nAmount)
 {
     NoiseAmount = nAmount;
@@ -339,8 +359,45 @@ void ProjectSettings::toggleSobel(bool toggledSobel)
     bIsSobelLineEnabled = toggledSobel ? 1 : 0;
     SetShaderValue(styleShader, toggleSobelLoc, &bIsSobelLineEnabled, SHADER_UNIFORM_INT);
 }
+
 void ProjectSettings::toggleDepthLine(bool toggledDepth)
 {
     bIsDepthLineEnabled = toggledDepth ? 1 : 0;
     SetShaderValue(styleShader, toggleDepthLoc, &bIsDepthLineEnabled, SHADER_UNIFORM_INT);
+}
+
+void ProjectSettings::updateNearPlane(float nearPlaneVal)
+{
+    depthNearPlane = nearPlaneVal;
+    SetShaderValue(styleShader, depthNearPlaneLoc, &depthNearPlane, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updateFarPlane(float farPlaneVal)
+{
+    depthFarPlane = farPlaneVal;
+    SetShaderValue(styleShader, depthFarPlaneLoc, &depthFarPlane, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updateSobelKernelSize(float sobelKernelSizeVal)
+{
+    sobelKernelSize = sobelKernelSizeVal;
+    SetShaderValue(styleShader, sobelKernelSizeLoc, &sobelKernelSize, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updatedpethSensitivity(float depthSensitivityVal)
+{
+    depthSensitivity = depthSensitivityVal;
+    SetShaderValue(styleShader, depthSensitivityLoc, &depthSensitivity, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updateEdgeThresh(float edgeThreshVal)
+{
+    depthEdgeThreshold = edgeThreshVal;
+    SetShaderValue(styleShader, depthEdgeThresholdLoc, &depthEdgeThreshold, SHADER_UNIFORM_FLOAT);
+}
+
+void ProjectSettings::updateSobelEdgeThres(float sobelEdgeThresVal)
+{
+    sobelEdgeThreshold = sobelEdgeThresVal;
+    SetShaderValue(styleShader, sobelEdgeThresholdLoc, &sobelEdgeThreshold, SHADER_UNIFORM_FLOAT);
 }

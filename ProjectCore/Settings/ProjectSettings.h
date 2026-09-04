@@ -102,6 +102,7 @@ public:
     void updateLightShader();
     void toggleLights();
     void toggleToon();
+    void toggleDepthBufferView();
     void updateNoiseAmount(float nAmount);
     void updateErrorPeriod(float ePeriodAmt);
     void updateErrorRange(float eRangeAmt);
@@ -109,9 +110,14 @@ public:
     void updateLineColor(float NewColor[3]);
     void toggleSobel(bool toggledSobel);
     void toggleDepthLine(bool toggledDepth);
+    void updateNearPlane(float nearPlaneVal);
+    void updateFarPlane(float farPlaneVal);
+    void updateSobelKernelSize(float sobelKernelSizeVal);
+    void updatedpethSensitivity(float depthSensitivityVal);
+    void updateEdgeThresh(float edgeThreshVal);
+    void updateSobelEdgeThres(float sobelEdgeThresVal);
      
 private:
-    int toonEnabled = {1};
     int toonLoc = {0};
     int edgeColorLoc = {0};
     int noiseAmountLoc = {0};
@@ -120,7 +126,16 @@ private:
     int lineColorBlendLoc = {0};
     int toggleDepthLoc = {0};
     int toggleSobelLoc = {0};
+    int depthNearPlaneLoc = {0}; // depth contrast for near plane (close objects are black)
+    int depthFarPlaneLoc = {0}; // depth contrast for far plane (horizon is white)
+    int sobelKernelSizeLoc = {0};       // adjust line thickness of sobel
+    int depthSensitivityLoc = {0};
+    int depthEdgeThresholdLoc = {0};
+    int sobelEdgeThresholdLoc = {0};
+    int depthViewEnabledLoc = {0};
 
+    int toonEnabled = {1};
+    int depthViewEnabled = {0};
     Vector3 EdgeColor = Vector3{0.2f, 0.2f, 0.25f};
     float NoiseAmount = {0.001f}; // default 0.002 - how fuzzy the lines are
     float ErrorPeriod = {5.0f}; // default 30.0  - how wavy the lines are
@@ -128,6 +143,12 @@ private:
     float LineColorBlendAmount = {1.0f};
     int bIsDepthLineEnabled = {1};
     int bIsSobelLineEnabled = {1};
+    float depthNearPlane = {0.09}; // depth contrast for near plane (close objects are black)
+    float depthFarPlane = {100.0}; // depth contrast for far plane (horizon is white)
+    float sobelKernelSize = {1.5};       // adjust line thickness of sobel
+    float depthSensitivity = {2.0};
+    float depthEdgeThreshold = {0.3}; // threshold before considering a line is present for depth
+    float sobelEdgeThreshold = {0.15}; // threshold before considering a line is present for sobel
 
     float cameraMovementSpeed = 5.0f;
     float camreaZoomSpeed = 200.0f;
